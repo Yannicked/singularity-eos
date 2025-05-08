@@ -426,6 +426,31 @@ int get_sg_BulkModulusFromDensityInternalEnergy(int matindex, EOS *eos,
 
   return 0;
 }
+int get_sg_PressureFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                          const double *temperatures, double *pressures,
+                                          const int len, const int stride = -1,
+                                          double *lambda_data = nullptr) {
+  if (stride != -1 && lambda_data != nullptr) {
+    lambdaIndexer2D idx(stride, lambda_data);
+    eos[matindex].PressureFromDensityTemperature(rhos, temperatures, pressures, len, idx);
+  } else
+    eos[matindex].PressureFromDensityTemperature(rhos, temperatures, pressures, len);
+
+  return 0;
+}
+int get_sg_InternalEnergyFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                                const double *temperatures, double *sies,
+                                                const int len, const int stride = -1,
+                                                double *lambda_data = nullptr) {
+  if (stride != -1 && lambda_data != nullptr) {
+    lambdaIndexer2D idx(stride, lambda_data);
+    eos[matindex].InternalEnergyFromDensityTemperature(rhos, temperatures, sies, len, idx);
+  } else
+    eos[matindex].InternalEnergyFromDensityTemperature(rhos, temperatures, sies, len);
+
+  return 0;
+}
+
 
 int finalize_sg_eos(const int nmat, EOS *&eos, const int own_kokkos) {
   {

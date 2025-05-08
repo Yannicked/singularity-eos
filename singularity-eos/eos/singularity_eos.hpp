@@ -111,6 +111,16 @@ int get_sg_BulkModulusFromDensityInternalEnergy(int matindex, EOS *eos,
                                                 double *bmods, const int len,
                                                 const int stride, double *lambda_data);
 
+int get_sg_InternalEnergyFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                                const double *temperatures, double *sies,
+                                                const int len, const int stride,
+                                                double *lambda_data);
+
+int get_sg_PressureFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                          const double *temperatures, double *pressures,
+                                          const int len, const int stride,
+                                          double *lambda_data);
+
 int get_sg_eos( // sizing information
     int nmat, int ncell, int cell_dim,
     // Input parameters
