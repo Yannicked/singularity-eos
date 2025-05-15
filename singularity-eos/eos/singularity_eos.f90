@@ -338,6 +338,34 @@ module singularity_eos
     end function
  end interface
 
+ interface
+     integer(kind=c_int) function &
+       get_sg_BulkModulusFromDensityTemperature(matindex, eos, rhos, temperatures,&
+                                                bmods, len, stride, lambda_data) &
+       bind(C, name='get_sg_BulkModulusFromDensityTemperature')
+       import
+       integer(c_int),value, intent(in) :: matindex, len
+       type(c_ptr), value, intent(in) :: eos, rhos, temperatures
+       type(c_ptr), value, intent(in) :: bmods
+       integer(c_int), value, intent(in) :: stride
+       type(c_ptr), value, intent(in) :: lambda_data
+    end function
+ end interface
+
+ interface
+     integer(kind=c_int) function &
+       get_sg_SpecificHeatFromDensityTemperature(matindex, eos, rhos, temperatures,&
+                                                 cvs, len, stride, lambda_data) &
+       bind(C, name='get_sg_SpecificHeatFromDensityTemperature')
+       import
+       integer(c_int),value, intent(in) :: matindex, len
+       type(c_ptr), value, intent(in) :: eos, rhos, temperatures
+       type(c_ptr), value, intent(in) :: cvs
+       integer(c_int), value, intent(in) :: stride
+       type(c_ptr), value, intent(in) :: lambda_data
+    end function
+ end interface
+
   interface
     integer(kind=c_int) function &
       get_sg_eos(nmat, ncell, cell_dim,&
@@ -849,18 +877,18 @@ contains
     eos, rhos, temperatures, sies, len, stride, lambda_data) &
     result(err)
     integer(c_int), intent(in) :: matindex, len
-    real(kind=8), dimension(:,:,:), intent(in), target:: rhos, temperatures
-    real(kind=8), dimension(:,:,:), intent(inout), target:: sies
+    real(kind=8), dimension(..), intent(in), target:: rhos, temperatures
+    real(kind=8), dimension(..), intent(inout), target:: sies
     type(sg_eos_ary_t), intent(in)    :: eos
     integer(c_int), intent(in), optional :: stride
     real(kind=8), dimension(:,:,:,:), intent(inout), target, optional::lambda_data
     if (PRESENT(stride) .and. PRESENT(lambda_data)) then
        err = get_sg_InternalEnergyFromDensityTemperature(matindex-1, &
-            eos%ptr, c_loc(rhos(1,1,1)), c_loc(temperatures(1,1,1)), c_loc(sies(1,1,1)), len, stride, &
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(sies), len, stride, &
             c_loc(lambda_data(1,1,1,1)))
     else
        err = get_sg_InternalEnergyFromDensityTemperature(matindex-1, &
-            eos%ptr, c_loc(rhos(1,1,1)), c_loc(temperatures(1,1,1)), c_loc(sies(1,1,1)), len, -1, C_NULL_PTR)
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(sies), len, -1, C_NULL_PTR)
     endif
   end function get_sg_InternalEnergyFromDensityTemperature_f
 
@@ -868,20 +896,56 @@ contains
     eos, rhos, temperatures, pressures, len, stride, lambda_data) &
     result(err)
     integer(c_int), intent(in) :: matindex, len
-    real(kind=8), dimension(:,:,:), intent(in), target:: rhos, temperatures
-    real(kind=8), dimension(:,:,:), intent(inout), target:: pressures
+    real(kind=8), dimension(..), intent(in), target:: rhos, temperatures
+    real(kind=8), dimension(..), intent(inout), target:: pressures
     type(sg_eos_ary_t), intent(in)    :: eos
     integer(c_int), intent(in), optional :: stride
-    real(kind=8), dimension(:,:,:,:), intent(inout), target, optional::lambda_data
+    real(kind=8), dimension(..), intent(inout), target, optional::lambda_data
     if (PRESENT(stride) .and. PRESENT(lambda_data)) then
        err = get_sg_PressureFromDensityTemperature(matindex-1, &
-            eos%ptr, c_loc(rhos(1,1,1)), c_loc(temperatures(1,1,1)), c_loc(pressures(1,1,1)), len, stride, &
-            c_loc(lambda_data(1,1,1,1)))
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(pressures), len, stride, &
+            c_loc(lambda_data))
     else
        err = get_sg_PressureFromDensityTemperature(matindex-1, &
-            eos%ptr, c_loc(rhos(1,1,1)), c_loc(temperatures(1,1,1)), c_loc(pressures(1,1,1)), len, -1, C_NULL_PTR)
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(pressures), len, -1, C_NULL_PTR)
     endif
   end function get_sg_PressureFromDensityTemperature_f
+
+  integer function get_sg_BulkModulusFromDensityTemperature_f(matindex, &
+    eos, rhos, temperatures, bmods, len, stride, lambda_data) &
+    result(err)
+    integer(c_int), intent(in) :: matindex, len
+    real(kind=8), dimension(..), intent(in), target:: rhos, temperatures
+    real(kind=8), dimension(..), intent(inout), target:: bmods
+    type(sg_eos_ary_t), intent(in)    :: eos
+    integer(c_int), intent(in), optional :: stride
+    real(kind=8), dimension(..), intent(inout), target, optional::lambda_data
+    if (PRESENT(stride) .and. PRESENT(lambda_data)) then
+       err = get_sg_BulkModulusFromDensityTemperature(matindex-1, &
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(bmods), len, stride, c_loc(lambda_data))
+    else
+       err = get_sg_BulkModulusFromDensityTemperature(matindex-1, &
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(bmods), len, -1, C_NULL_PTR)
+    endif
+  end function get_sg_BulkModulusFromDensityTemperature_f
+
+  integer function get_sg_SpecificHeatFromDensityTemperature_f(matindex, &
+    eos, rhos, temperatures, cvs, len, stride, lambda_data) &
+    result(err)
+    integer(c_int), intent(in) :: matindex, len
+    real(kind=8), dimension(..), intent(in), target:: rhos, temperatures
+    real(kind=8), dimension(..), intent(inout), target:: cvs
+    type(sg_eos_ary_t), intent(in)    :: eos
+    integer(c_int), intent(in), optional :: stride
+    real(kind=8), dimension(..), intent(inout), target, optional::lambda_data
+    if (PRESENT(stride) .and. PRESENT(lambda_data)) then
+       err = get_sg_SpecificHeatFromDensityTemperature(matindex-1, &
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(cvs), len, stride, c_loc(lambda_data))
+    else
+       err = get_sg_SpecificHeatFromDensityTemperature(matindex-1, &
+            eos%ptr, c_loc(rhos), c_loc(temperatures), c_loc(cvs), len, -1, C_NULL_PTR)
+    endif
+  end function get_sg_SpecificHeatFromDensityTemperature_f
 
   integer function finalize_sg_eos_f(nmat, eos) &
     result(err)

@@ -21,6 +21,8 @@ implicit none
 ! variable declaration
 integer                                   :: nmat, res, mat
 type(sg_eos_ary_t)                        :: eos
+real(kind=8), dimension(10) :: density, temperature, pressure, sie
+integer :: i
 
 ! set test parameters
 nmat = 5
@@ -44,6 +46,13 @@ res = init_sg_DavisReactants_f(mat, eos, 1.890d0, 4.115d10, 1.0d6, 297.0d0, 1.8d
 mat = mat + 1
 res = init_sg_DavisProducts_f(mat, eos, 0.798311d0, 0.58d0, 1.35d0, 2.66182d0,&
                            0.75419d0, 3.2d10, 0.001072d10)
+
+mat = 1
+density = [(10.**(i-9), i=1, 10)]
+temperature = [(10.**(i), i=1,10)]
+
+! We need to check the output
+res = get_sg_PressureFromDensityTemperature_f(mat, eos, density, temperature, pressure, 10)
 
 ! cleanup
 res = finalize_sg_eos_f(nmat, eos)

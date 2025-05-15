@@ -450,6 +450,30 @@ int get_sg_InternalEnergyFromDensityTemperature(int matindex, EOS *eos, const do
 
   return 0;
 }
+int get_sg_BulkModulusFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                                const double *temperatures, double *bmods,
+                                                const int len, const int stride = -1,
+                                                double *lambda_data = nullptr) {
+  if (stride != -1 && lambda_data != nullptr) {
+    lambdaIndexer2D idx(stride, lambda_data);
+    eos[matindex].BulkModulusFromDensityTemperature(rhos, temperatures, bmods, len, idx);
+  } else
+    eos[matindex].BulkModulusFromDensityTemperature(rhos, temperatures, bmods, len);
+
+  return 0;
+}
+int get_sg_SpecificHeatFromDensityTemperature(int matindex, EOS *eos, const double *rhos,
+                                                const double *temperatures, double *cvs,
+                                                const int len, const int stride = -1,
+                                                double *lambda_data = nullptr) {
+  if (stride != -1 && lambda_data != nullptr) {
+    lambdaIndexer2D idx(stride, lambda_data);
+    eos[matindex].SpecificHeatFromDensityTemperature(rhos, temperatures, cvs, len, idx);
+  } else
+    eos[matindex].SpecificHeatFromDensityTemperature(rhos, temperatures, cvs, len);
+
+  return 0;
+}
 
 
 int finalize_sg_eos(const int nmat, EOS *&eos, const int own_kokkos) {
