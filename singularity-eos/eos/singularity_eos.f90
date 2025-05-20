@@ -127,7 +127,7 @@ contains
          split_use = 0
       end if
 
-      self%ptr = init_sg_SpinerDependsRhoT(trim(filename)//C_NULL_CHAR, id, split)
+      self%ptr = init_sg_SpinerDependsRhoT(trim(filename)//C_NULL_CHAR, id, split_use)
    end function
 
    elemental function InternalEnergyFromDensityTemperature(self, rho, temperature) result(sie)
