@@ -34,6 +34,12 @@ const Real get_sg_MeanAtomicMass(EOS *eos);
 
 const Real get_sg_MeanAtomicNumber(EOS *eos);
 
+void modify_sg_ScaledEOS(EOS *eos, const Real scale);
+
+void modify_sg_ShiftedEOS(EOS *eos, const Real shift);
+
+void modify_sg_BilinearRampEOS(EOS *eos, const Real alpha0, const Real Pe, const Real Pc);
+
 void finalize_sg_eos(EOS *eos);
 
 #if defined(__cplusplus)

@@ -1,6 +1,9 @@
 #include <string>
 
+#include <mpark/variant.hpp>
 #include <singularity-eos/eos/eos.hpp>
+#include <singularity-eos/eos/eos_builder.hpp>
+#include <singularity-eos/eos/modifiers/ramps_eos.hpp> // Added for BilinearRampEOS
 #include <singularity-eos/eos/singularity_eos.hpp>
 
 using namespace singularity;
@@ -43,6 +46,23 @@ const Real get_sg_SpecificHeatFromDensityTemperature(EOS *eos, const Real densit
 const Real get_sg_MeanAtomicMass(EOS *eos) { return eos->MeanAtomicMass(); }
 
 const Real get_sg_MeanAtomicNumber(EOS *eos) { return eos->MeanAtomicNumber(); }
+
+void modify_sg_ScaledEOS(EOS *eos, const Real scale) {
+  *eos = eos->template Modify<ScaledEOS>(scale);
+}
+
+void modify_sg_ShiftedEOS(EOS *eos, const Real shift) {
+  *eos = eos->template Modify<ShiftedEOS>(shift);
+}
+
+void modify_sg_BilinearRampEOS(EOS *eos, const Real alpha0, const Real Pe,
+                                const Real Pc) {
+  Real r0, a, b, c;
+  
+  pAlpha2BilinearRampParams(*eos, alpha0, Pe, Pc, r0, a, b, c);
+
+  *eos = eos->template Modify<BilinearRampEOS>(r0, a, b, c);
+}
 
 void finalize_sg_eos(EOS *eos) {
   eos->Finalize();

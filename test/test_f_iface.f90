@@ -47,5 +47,11 @@ where (mask)
 endwhere
 ! assert sies == (0, 2000)
 
+call eos%Modify_ScaledEOS(0.5d0)
+
+sies(:) = 0.0d0
+sies = eos%InternalEnergyFromDensityTemperature(0.1d0, 3000.d0)
+
+
 call eos%Finalize()
 end program test_sg_fortran_interface

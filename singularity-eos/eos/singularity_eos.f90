@@ -19,6 +19,11 @@ module singularity_eos
       procedure :: MeanAtomicMass
       procedure :: MeanAtomicNumber
 
+      ! EOS Modifiers
+      procedure :: Modify_ScaledEOS
+      procedure :: Modify_ShiftedEOS
+      procedure :: Modify_BilinearRampEOS
+
       procedure :: Finalize
    end type sg_eos
 
@@ -100,12 +105,41 @@ module singularity_eos
    end interface
 
    interface
+      subroutine modify_sg_ScaledEOS(eos, scale) &
+         bind(C, name='modify_sg_ScaledEOS')
+         import
+         type(c_ptr), value, intent(in) :: eos
+         real(kind=c_double), value, intent(in) :: scale
+      end subroutine
+   end interface
+
+   interface
+      subroutine modify_sg_ShiftedEOS(eos, shift) &
+         bind(C, name='modify_sg_ShiftedEOS')
+         import
+         type(c_ptr), value, intent(in) :: eos
+         real(kind=c_double), value, intent(in) :: shift
+      end subroutine
+   end interface
+
+   interface
+      subroutine modify_sg_BilinearRampEOS(eos, alpha0, Pe, Pc) &
+         bind(C, name='modify_sg_BilinearRampEOS')
+         import
+         type(c_ptr), value, intent(in) :: eos
+         real(kind=c_double), value, intent(in) :: alpha0, Pe, Pc
+      end subroutine
+   end interface
+
+   interface
       subroutine finalize_sg_eos(eos) bind(C, name='finalize_sg_eos')
          import
          type(c_ptr), value, intent(in) :: eos
       end subroutine
    end interface
 contains
+
+   ! EOS Initializers
    function init_IdealGas(gamma_minus_1, c_v) result(self)
       real(kind=c_double), intent(in) :: gamma_minus_1, c_v
       type(sg_eos) :: self
@@ -175,6 +209,27 @@ contains
 
       z_bar = get_sg_MeanAtomicNumber(self%ptr)
    end function
+
+   subroutine Modify_ScaledEOS(self, scale)
+      class(sg_eos), intent(in) :: self
+      real(kind=c_double) :: scale
+
+      call modify_sg_ScaledEOS(self%ptr, scale)
+   end subroutine
+
+   subroutine Modify_ShiftedEOS(self, shift)
+      class(sg_eos), intent(in) :: self
+      real(kind=c_double) :: shift
+
+      call modify_sg_ShiftedEOS(self%ptr, shift)
+   end subroutine
+
+   subroutine Modify_BilinearRampEOS(self, alpha0, Pe, Pc)
+      class(sg_eos), intent(in) :: self
+      real(kind=c_double), intent(in) :: alpha0, Pe, Pc
+
+      call modify_sg_BilinearRampEOS(self%ptr, alpha0, Pe, Pc)
+   end subroutine
 
    subroutine Finalize(self)
       class(sg_eos), intent(in) :: self
