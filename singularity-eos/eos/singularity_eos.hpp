@@ -38,7 +38,7 @@ void modify_sg_ScaledEOS(EOS *eos, const Real scale);
 
 void modify_sg_ShiftedEOS(EOS *eos, const Real shift);
 
-void modify_sg_BilinearRampEOS(EOS *eos, const Real alpha0, const Real Pe, const Real Pc);
+void modify_sg_BilinearRampEOS(EOS *eos, const Real r0, const Real a, const Real b, const Real c);
 
 void finalize_sg_eos(EOS *eos);
 

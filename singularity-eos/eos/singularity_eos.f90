@@ -123,11 +123,11 @@ module singularity_eos
    end interface
 
    interface
-      subroutine modify_sg_BilinearRampEOS(eos, alpha0, Pe, Pc) &
+      subroutine modify_sg_BilinearRampEOS(eos, r0, a, b, c) &
          bind(C, name='modify_sg_BilinearRampEOS')
          import
          type(c_ptr), value, intent(in) :: eos
-         real(kind=c_double), value, intent(in) :: alpha0, Pe, Pc
+         real(kind=c_double), value, intent(in) :: r0, a, b, c
       end subroutine
    end interface
 
@@ -224,11 +224,11 @@ contains
       call modify_sg_ShiftedEOS(self%ptr, shift)
    end subroutine
 
-   subroutine Modify_BilinearRampEOS(self, alpha0, Pe, Pc)
+   subroutine Modify_BilinearRampEOS(self, r0, a, b, c)
       class(sg_eos), intent(in) :: self
-      real(kind=c_double), intent(in) :: alpha0, Pe, Pc
+      real(kind=c_double), intent(in) :: r0, a, b, c
 
-      call modify_sg_BilinearRampEOS(self%ptr, alpha0, Pe, Pc)
+      call modify_sg_BilinearRampEOS(self%ptr, r0, a, b, c)
    end subroutine
 
    subroutine Finalize(self)

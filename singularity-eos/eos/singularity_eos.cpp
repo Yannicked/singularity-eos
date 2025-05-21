@@ -55,11 +55,11 @@ void modify_sg_ShiftedEOS(EOS *eos, const Real shift) {
   *eos = eos->template Modify<ShiftedEOS>(shift);
 }
 
-void modify_sg_BilinearRampEOS(EOS *eos, const Real alpha0, const Real Pe,
-                                const Real Pc) {
-  Real r0, a, b, c;
+void modify_sg_BilinearRampEOS(EOS *eos, const Real r0, const Real a,
+                                const Real b, const Real c) {
+  // Real r0, a, b, c;
   
-  pAlpha2BilinearRampParams(*eos, alpha0, Pe, Pc, r0, a, b, c);
+  // pAlpha2BilinearRampParams(*eos, alpha0, Pe, Pc, r0, a, b, c);
 
   *eos = eos->template Modify<BilinearRampEOS>(r0, a, b, c);
 }
